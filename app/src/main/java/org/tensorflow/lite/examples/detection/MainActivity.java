@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,8 +24,8 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private TextToSpeech textToSpeech;
     private static final int RECOGNIZE_SPEECH_REQUEST_CODE = 100;
-    private boolean SHUTDOWN = false;
     Context context = this;
+    private  boolean FIRST = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +36,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        textToSpeech.shutdown();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//       Reinitialize the recognizer and tts engines upon resuming from background such as after openning the browser
-        startReading();
+
+        boolean SHUTDOWN = this.getSharedPreferences("VISUAL",Context.MODE_PRIVATE).getBoolean("SHUTDOWN",false);
+        if(!SHUTDOWN){
+            startReading();
+        }
     }
 
 
@@ -52,14 +56,52 @@ public class MainActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
 
-                    int lang = textToSpeech.setLanguage(Locale.ENGLISH);
-                    String s = "What do you want?";
-                    int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
-                    Log.d("On beginning of speech", s);
-                    startListening();
+                    MediaPlayer mediaPlayer;
+                    if(FIRST){
+                        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.first);
+                        FIRST = false;
+                    }else{
+                        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.min_lefelg);
+                    }
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            startListening();
+                        }
+
+                    });
+                    mediaPlayer.start();
+                   // Log.d("On beginning of speech", );
                 }
             }
         });
+    }
+    public void startReading2(String response) {
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+
+                    int lang = textToSpeech.setLanguage(Locale.ENGLISH);
+                    String s = "min tifel gal eh?";
+                    if(FIRST){
+                        s = "ene visualize negn, " + s;
+                        FIRST = false;
+                    }
+                    int speech = textToSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+                    Log.d("On beginning of speech", s);
+
+                }
+            }
+        });
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        startListening();
+
     }
 
     public void startListening() {
@@ -85,17 +127,15 @@ public class MainActivity extends AppCompatActivity {
                     //print the first text for now
                     Log.d("Speech text", result.get(0));
                     String[] text = result.get(0).split(" ");
-                    if( text.length == 2 && text[1].equals("ፈልግ")){
+                    if( text.length == 2 && text[1].equals("ፈልጊልኝ")){
+                        //textToSpeech.shutdown();
+                        this.getSharedPreferences("VISUAL",Context.MODE_PRIVATE).edit().putBoolean("SHUTDOWN",true).commit();
                         Intent intent = new Intent(this, DetectorActivity.class);
                         String command = translate(text[0], "am-en");
                         //HashMap<String, String> map = new Gson().fromJson(command, new TypeToken<HashMap<String, String>>(){}.getType());
                         intent.putExtra("COMMAND",command.toLowerCase());
                         startActivity(intent);
                     }
-//                    else{
-//                        //startListening();
-//                        textToSpeech.shutdown();
-//                    }
                 }
             }
             break;

@@ -188,6 +188,13 @@ public abstract class CameraActivity extends AppCompatActivity
     return yuvBytes[0];
   }
 
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+    this.getSharedPreferences("VISUAL",Context.MODE_PRIVATE).edit().putBoolean("SHUTDOWN",false).commit();
+  }
+
+
   /** Callback for android.hardware.Camera API */
   @Override
   public void onPreviewFrame(final byte[] bytes, final Camera camera) {
@@ -333,6 +340,8 @@ public abstract class CameraActivity extends AppCompatActivity
   public synchronized void onStop() {
     LOGGER.d("onStop " + this);
     super.onStop();
+    this.getSharedPreferences("VISUAL",Context.MODE_PRIVATE).edit().putBoolean("SHUTDOWN",false).commit();
+
   }
 
   @Override

@@ -26,6 +26,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -174,6 +175,23 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     });
   }
 
+  public void startReading2(String response) {
+
+    MediaPlayer mediaPlayer;
+
+    if(response.equals("LEFT")){
+      mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.wede_gira);
+    }
+    else if (response.equals("RIGHT")){
+      mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.wede_kegn);
+    }
+    else{
+      mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.wede_fit);
+    }
+
+    mediaPlayer.start();
+  }
+
   @Override
   protected void processImage() {
     ++timestamp;
@@ -233,6 +251,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                       result.getTitle().trim().equals(command.trim())) {
                 canvas.drawRect(location, paint);
                 String final_response = "";
+                String final_response_2 = "";
                 float objectCenter = location.centerX();
                 Log.d("label", "location.right = " + location.right);
                 Log.d("label", "object center = " + objectCenter);
@@ -244,14 +263,18 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 if(difference > 20){
                   // go to the left
                   final_response = "Wood eh gra";
+                  final_response_2 = "LEFT";
                 }
                 else if (difference < -20) {
                   // turn to the right
                   final_response = "Wood eh kegn";
+                  final_response_2 = "RIGHT";
+
                 }
                 else {
                   // go forward
                   final_response = "Wood eh feet";
+                  final_response_2 = "FORWARD";
                 }
                 Log.d("label", "difference = " + difference + "direction = " + final_response);
 
@@ -259,11 +282,13 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 // text to speech code
                 if (lastSpoke == null) {
                   lastSpoke = new Date();
-                  startReading(final_response);
+//                  startReading(final_response);
+                  startReading2(final_response_2);
                 }
                 currentSpeak = new Date();
                 if(currentSpeak.getTime() - lastSpoke.getTime() > (2 * 1000)) {
-                  startReading(final_response);
+//                  startReading(final_response);
+                  startReading2(final_response_2);
                   lastSpoke = currentSpeak;
                 }
                 cropToFrameTransform.mapRect(location);
