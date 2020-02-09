@@ -1,4 +1,4 @@
-package org.tensorflow.lite.examples.detection;
+package org.visualize;
 
 /**
  * Created by cesarferreira on 30/05/14.

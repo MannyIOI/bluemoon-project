@@ -13,11 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package org.tensorflow.lite.examples.detection.env;
+package org.visualize.env;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Environment;
+
 import java.io.File;
 import java.io.FileOutputStream;
 

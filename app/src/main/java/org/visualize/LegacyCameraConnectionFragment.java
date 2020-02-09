@@ -1,4 +1,4 @@
-package org.tensorflow.lite.examples.detection;
+package org.visualize;
 
 /*
  * Copyright 2019 The TensorFlow Authors. All Rights Reserved.
@@ -30,11 +30,14 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.visualize.R;
+import org.visualize.customview.AutoFitTextureView;
+import org.visualize.env.ImageUtils;
+import org.visualize.env.Logger;
+
 import java.io.IOException;
 import java.util.List;
-import org.tensorflow.lite.examples.detection.customview.AutoFitTextureView;
-import org.tensorflow.lite.examples.detection.env.ImageUtils;
-import org.tensorflow.lite.examples.detection.env.Logger;
 
 public class LegacyCameraConnectionFragment extends Fragment {
   private static final Logger LOGGER = new Logger();

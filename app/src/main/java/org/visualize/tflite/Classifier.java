@@ -13,10 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package org.tensorflow.lite.examples.detection.tflite;
+package org.visualize.tflite;
 
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+
 import java.util.List;
 
 /** Generic interface for interacting with different recognition engines. */
